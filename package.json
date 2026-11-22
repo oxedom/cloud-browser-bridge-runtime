@@ -1,0 +1,7 @@
+{
+  "name": "cloud-browser-bridge",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=24.22.3"},
+  "scripts": {"test:e2e": "docker build --file e2e/Dockerfile --tag cloud-browser-bridge-e2e . && docker run --rm cloud-browser-bridge-e2e"}
+}
