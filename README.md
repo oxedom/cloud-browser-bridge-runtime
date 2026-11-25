@@ -1,11 +1,11 @@
-# Cloud Browser Bridge Runtime
+# Cloud Browser Bridge: runtime files
 
-Public, dependency-free runtime files for installing the Cloud Browser Bridge on an authorized Linux machine. Development, relay deployment, controller configuration, and private state live in a separate private repository.
+Public, dependency-free runtime files for installing the Cloud Browser Bridge on an authorized Linux machine. The Cloud Browser Bridge is a small background service that keeps this machine reachable from the workspace and runs scheduled jobs through a local authenticated service. Development, workspace deployment, administrator configuration, and private state live in a separate private repository.
 
-The target connects outbound to `https://workspace.brinked.ai`, polls for commands, executes them through an authenticated loopback agent, and returns stdout, stderr, and exit status.
+The daemon checks in with `https://workspace.brinked.ai` over HTTPS, runs each job locally, and returns stdout, stderr, and exit status.
 
 ```text
-webpage or CLI -> durable relay <- outbound worker -> loopback agent -> bash
+webpage or CLI -> the workspace <- daemon -> local service -> bash
 ```
 
 ## Install
@@ -16,7 +16,7 @@ The target needs Linux, Bash, curl, tar, `sha256sum`, and `flock`. The installer
 curl -fsSL https://raw.githubusercontent.com/oxedom/cloud-browser-bridge-runtime/main/install.sh | bash
 ```
 
-The installation lives at `$HOME/cloud-browser-bridge-v2` to avoid colliding with older installations and ledgers.
+The installation lives at `$HOME/cloud-browser-bridge-v2` to avoid colliding with an older installation's machine key or job log.
 
 ```bash
 ~/cloud-browser-bridge-v2/bridge status
@@ -27,6 +27,6 @@ The installation lives at `$HOME/cloud-browser-bridge-v2` to avoid colliding wit
 ~/cloud-browser-bridge-v2/bridge stop
 ```
 
-Each command has a durable caller-generated ID, a 60-second limit, and a combined 1 MiB output limit. SQLite records the execution claim before starting a command and caches its result. Redelivery returns the cached result; an interrupted claim is reported instead of replayed.
+Each job has a caller-generated stable ID, a 60-second limit, and a combined 1 MiB output limit. SQLite records the run claim before the job starts and caches its result, so a redelivery returns the cached result instead of running the job twice. An interrupted claim is reported instead of replayed.
 
-Private state lives in `.state/` and `.runtime/`. Preserve the identity and execution ledger together. Never commit credentials, private links, databases, or logs.
+Private state lives in `.state/` and `.runtime/`. The machine key is the locally generated machine credential and the job log is the local record of every run. Preserve them together. Never commit credentials, private links, databases, or logs.
