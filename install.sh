@@ -35,7 +35,7 @@ if ! compatible "$node_bin"; then
   fi
 fi
 compatible "$node_bin" || { echo 'Node cannot run on this machine (Linux glibc 2.28+ is required).' >&2; exit 1; }
-echo 'Downloading bridge source...'
+echo 'Downloading source...'
 curl -fsSL --retry 3 https://github.com/oxedom/cloud-browser-bridge-runtime/archive/refs/heads/main.tar.gz -o "$stage/source.tar.gz"
 prefix=$(tar -tzf "$stage/source.tar.gz" | sed -n '1s|/.*||p')
 [[ "$prefix" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid source archive.' >&2; exit 1; }
